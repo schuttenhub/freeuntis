@@ -1,21 +1,39 @@
-version: '3.8'
 services:
+#--------------------------------------------FRONTEND
   frontend:
     container_name: frontend
     build: ./frontend
     env_file:
       - .env
-    ports:  
-      - "3000:3000"
+    ports:
+      - "${PORT_FRONTEND}:${PORT_FRONTEND}"
     volumes:
-      - ./frontend/app:/home/node/app  # Maps the host directory './Frontend/app' to '/home/node/app' in the container
-
+      - ./frontend/app:/home/node/app
+    command: sh -c "npm install && node server.js"
+    networks:
+      - freeuntis-network
+#--------------------------------------------BACKEND
   backend:
     container_name: backend
     build: ./backend
     env_file:
       - .env
     ports:
-      - "8000:8000"
+      - "${PORT_BACKEND}:${PORT_BACKEND}"
     volumes:
-      - ./backend/app:/home/node/app  # Maps the host directory './Backend' to '/app' in the container
+      - ./backend/app:/home/node/app 
+    command: >
+      sh -c "if [ ! -f 'db/freeuntis.db' ]; then
+                cd db &&
+                sqlite3 freeuntis.db < init.sql &&
+                cd .. &&
+                echo 'DB created!';
+             fi &&
+             npm ci &&
+             npm run dev"
+    networks:
+      - freeuntis-network
+#--------------------------------------------NETWORK
+networks:
+  freeuntis-network:
+    external: true
