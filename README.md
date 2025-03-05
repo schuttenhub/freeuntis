@@ -18,3 +18,5 @@ Fire up your container with:
 docker compose up -d
 ```
 Open Browser and go to  http://localhost:3000/ (or whatever hostname:port you chose)
+
+With kind support of my fellow students @0xd1d1t, @premaxim, @rndlrlf
